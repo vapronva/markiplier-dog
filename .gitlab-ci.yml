@@ -35,6 +35,10 @@ include:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
+build:
+  needs:
+    - job: pnpm install
+
 build docker image:
   <<: *build-rules-frontend
 
