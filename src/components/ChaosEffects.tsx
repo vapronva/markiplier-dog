@@ -64,6 +64,7 @@ export const FloatingDebris = () => {
           style={{ width: item.size, height: item.size }}
           className="absolute opacity-60"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://cdn.docker.house/markiplier-dog/image/dog/png/barkiplier.png"
             className="h-full w-full object-contain"
@@ -184,6 +185,7 @@ export const FleeingElement = () => {
             top: `${dog.y}%`,
           }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://cdn.docker.house/markiplier-dog/image/dog/png/barkiplier.png"
             className="h-24 w-24 object-contain drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]"

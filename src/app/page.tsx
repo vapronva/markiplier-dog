@@ -86,6 +86,7 @@ export default function HomePage() {
                 repeat: Infinity,
               }}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="https://cdn.docker.house/markiplier-dog/image/dog/png/barkiplier.png"
                 className="h-full w-full object-contain"
