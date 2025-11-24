@@ -1,0 +1,50 @@
+---
+nameOverride: markiplierdog-frontend
+fullnameOverride: markiplierdog-frontend
+
+deployment:
+  containers:
+    - name: frontend
+      image:
+        registry: rg.gl.vprw.ru
+        repository: vapronva/markiplier-dog/frontend
+        tag: latest
+        pullPolicy: Always
+      ports:
+        - name: http
+          containerPort: 3000
+          protocol: TCP
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                  - ludicrous-reception
+
+services:
+  - name: markiplierdog-frontend
+    type: ClusterIP
+    ports:
+      - name: http
+        port: 3000
+        targetPort: http
+        protocol: TCP
+
+configMap:
+  - name: caddy-config
+    labels:
+      ckic.cmld.ru/aggregate: "true"
+    data:
+      Caddyfile: |
+        markiplier.dog:443 {
+          import basic-compression-set
+          import default-headers-set-custom
+          header * {
+            X-Robots-Tag "index, archive, nofollow"
+          }
+          import reverse-proxy-xri-hd http://markiplierdog-frontend.markiplier-dog.svc.cluster.local:3000
+        }
