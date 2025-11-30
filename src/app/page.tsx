@@ -26,8 +26,8 @@ export default function HomePage() {
     if (!videoRef.current || !entered) return;
     const currentSrc = videoRef.current.src;
     const targetSrc = isLowQuality
-      ? "https://cdn.docker.house/markiplier-dog/video/h264/aac/80p/1123.mp4"
-      : "https://cdn.docker.house/markiplier-dog/video/h264/aac/1080p/1123.mp4";
+      ? "https://cdn.engineering/markiplier-dog/video/h264/aac/80p/1123.mp4"
+      : "https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4";
     if (currentSrc !== targetSrc) {
       const time = videoRef.current.currentTime;
       const isPlaying = !videoRef.current.paused;
@@ -88,7 +88,7 @@ export default function HomePage() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://cdn.docker.house/markiplier-dog/image/dog/png/barkiplier.png"
+                src="https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png"
                 className="h-full w-full object-contain"
               />
             </motion.div>
@@ -104,7 +104,7 @@ export default function HomePage() {
                 className="absolute inset-0 z-0 bg-cover bg-center opacity-5 contrast-150 grayscale"
                 style={{
                   backgroundImage:
-                    'url("https://cdn.docker.house/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg")',
+                    'url("https://cdn.engineering/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg")',
                 }}
               />
               <div className="z-10 flex flex-col items-center gap-8 mix-blend-difference">
@@ -125,7 +125,7 @@ export default function HomePage() {
             className="absolute inset-0 z-0 bg-cover bg-center opacity-10 brightness-[0.15] contrast-[2.0] grayscale"
             style={{
               backgroundImage:
-                'url("https://cdn.docker.house/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg")',
+                'url("https://cdn.engineering/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg")',
             }}
             animate={{
               filter: [
@@ -164,7 +164,7 @@ export default function HomePage() {
           >
             <video
               ref={videoRef}
-              src="https://cdn.docker.house/markiplier-dog/video/h264/aac/1080p/1123.mp4"
+              src="https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4"
               className="h-full w-full object-cover"
               width={1080}
               height={1290}

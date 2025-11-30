@@ -4,9 +4,9 @@ import { type Metadata } from "next";
 import { Inter } from "next/font/google";
 
 const OG_VIDEO_URL =
-  "https://cdn.docker.house/markiplier-dog/video/h264/aac/1080p/1123.mp4";
+  "https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4";
 const OG_IMAGE_URL =
-  "https://cdn.docker.house/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg";
+  "https://cdn.engineering/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://markiplier.dog"),

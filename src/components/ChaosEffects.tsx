@@ -66,7 +66,7 @@ export const FloatingDebris = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://cdn.docker.house/markiplier-dog/image/dog/png/barkiplier.png"
+            src="https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png"
             className="h-full w-full object-contain"
           />
         </motion.div>
@@ -187,7 +187,7 @@ export const FleeingElement = () => {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://cdn.docker.house/markiplier-dog/image/dog/png/barkiplier.png"
+            src="https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png"
             className="h-24 w-24 object-contain drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]"
           />
         </div>
