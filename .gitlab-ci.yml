@@ -19,7 +19,7 @@ include:
       ci_image_name: frontend
       ci_image_tags: latest,$CI_COMMIT_SHA
       dockerfile_path: Dockerfile
-      build_args: --secret id=NPM_PROXY_URL,type=env --secret id=NPM_PROXY_USERNAME,type=env --secret id=NPM_PROXY_PASSWORD,type=env --secret id=NODE_ENV,type=env --secret id=SENTRY_AUTH_TOKEN,type=env
+      build_args: --secret id=NODE_ENV,type=env --secret id=SENTRY_AUTH_TOKEN,type=env
   - component: $CI_SERVER_FQDN/ci/container-scanning/cs@1
     inputs:
       default_branch_image: $CI_REGISTRY_IMAGE/frontend:latest
@@ -34,7 +34,7 @@ include:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
-build docker image:
+build container image:
   <<: *build-rules-frontend
 
 create manifest:
