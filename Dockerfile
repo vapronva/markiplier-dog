@@ -2,7 +2,7 @@ FROM docker.io/library/node:25-alpine AS builder
 
 WORKDIR /usr/src/app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 RUN npm install --global pnpm@10 && \
     pnpm install

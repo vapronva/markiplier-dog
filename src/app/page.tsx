@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue } from "framer-motion";
+import Image from "next/image";
 import {
   FloatingDebris,
   GlitchText,
@@ -12,16 +13,18 @@ import {
 export default function HomePage() {
   const [entered, setEntered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const cursorX = useMotionValue(0);
+  const cursorY = useMotionValue(0);
   const [isLowQuality, setIsLowQuality] = useState(false);
   useEffect(() => {
     if (entered) return;
     const handleMouseMove = (e: MouseEvent) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [entered]);
+  }, [entered, cursorX, cursorY]);
   useEffect(() => {
     if (!videoRef.current || !entered) return;
     const currentSrc = videoRef.current.src;
@@ -74,8 +77,8 @@ export default function HomePage() {
             <motion.div
               className="pointer-events-none fixed z-100 h-32 w-32 -translate-x-1/2 -translate-y-1/2 mix-blend-difference"
               style={{
-                left: cursorPos.x,
-                top: cursorPos.y,
+                left: cursorX,
+                top: cursorY,
               }}
               animate={{
                 rotate: [0, 10, -10, 0],
@@ -86,9 +89,13 @@ export default function HomePage() {
                 repeat: Infinity,
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src="https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png"
+                alt=""
+                width={128}
+                height={128}
+                priority
+                unoptimized
                 className="h-full w-full object-contain"
               />
             </motion.div>

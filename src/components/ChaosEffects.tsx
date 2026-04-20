@@ -1,10 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 
+const DOG_ICON_SRC =
+  "https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png";
+
 export const FloatingDebris = () => {
-  const [debris, setDebris] = useState<
+  const [debris] = useState<
     {
       id: number;
       xPoints: number[];
@@ -13,9 +17,8 @@ export const FloatingDebris = () => {
       size: number;
       duration: number;
     }[]
-  >([]);
-  useEffect(() => {
-    const newDebris = Array.from({ length: 100 }).map((_, i) => {
+  >(() =>
+    Array.from({ length: 100 }).map((_, i) => {
       const startX = Math.random() * 100;
       const startY = Math.random() * 100;
       const startRotate = Math.random() * 360;
@@ -37,9 +40,8 @@ export const FloatingDebris = () => {
         size: 20 + Math.random() * 100,
         duration: 5 + Math.random() * 15,
       };
-    });
-    setDebris(newDebris);
-  }, []);
+    }),
+  );
   return (
     <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
       {debris.map((item) => (
@@ -64,9 +66,12 @@ export const FloatingDebris = () => {
           style={{ width: item.size, height: item.size }}
           className="absolute opacity-60"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png"
+          <Image
+            src={DOG_ICON_SRC}
+            alt=""
+            width={120}
+            height={120}
+            unoptimized
             className="h-full w-full object-contain"
           />
         </motion.div>
@@ -108,23 +113,20 @@ export const GlitchText = ({
 };
 
 export const FleeingElement = () => {
-  const [dogs, setDogs] = useState<
+  const [dogs] = useState<
     { id: number; x: number; y: number; wanderPhase: number }[]
-  >([]);
+  >(() =>
+    Array.from({ length: 15 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 80 + 10,
+      y: Math.random() * 80 + 10,
+      wanderPhase: Math.random() * Math.PI * 2,
+    })),
+  );
   const containerRef = useRef<HTMLDivElement>(null);
   const mousePos = useRef({ x: -9999, y: -9999 });
   const dogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const animationFrameRef = useRef<number>(0);
-  useEffect(() => {
-    setDogs(
-      Array.from({ length: 15 }).map((_, i) => ({
-        id: i,
-        x: Math.random() * 80 + 10,
-        y: Math.random() * 80 + 10,
-        wanderPhase: Math.random() * Math.PI * 2,
-      })),
-    );
-  }, []);
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
@@ -179,15 +181,18 @@ export const FleeingElement = () => {
           ref={(el) => {
             dogRefs.current[i] = el;
           }}
-          className="absolute transition-transform duration-[50ms] ease-linear will-change-transform"
+          className="absolute transition-transform duration-50 ease-linear will-change-transform"
           style={{
             left: `${dog.x}%`,
             top: `${dog.y}%`,
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png"
+          <Image
+            src={DOG_ICON_SRC}
+            alt=""
+            width={96}
+            height={96}
+            unoptimized
             className="h-24 w-24 object-contain drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]"
           />
         </div>
