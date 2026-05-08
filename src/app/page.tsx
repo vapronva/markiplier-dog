@@ -27,32 +27,32 @@ export default function HomePage() {
   }, [entered, cursorX, cursorY]);
   useEffect(() => {
     if (!videoRef.current || !entered) return;
-    const currentSrc = videoRef.current.src;
+    const video = videoRef.current;
+    const currentSrc = video.src;
     const targetSrc = isLowQuality
       ? "https://cdn.engineering/markiplier-dog/video/h264/aac/80p/1123.mp4"
       : "https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4";
     if (currentSrc !== targetSrc) {
-      const time = videoRef.current.currentTime;
-      const isPlaying = !videoRef.current.paused;
-      videoRef.current.src = targetSrc;
+      const time = video.currentTime;
+      const isPlaying = !video.paused;
+      video.src = targetSrc;
       const restore = () => {
-        if (videoRef.current) {
-          videoRef.current.currentTime = time;
-          if (isPlaying) {
-            videoRef.current
-              .play()
-              .catch((error) =>
-                console.warn(
-                  "Video resume interrupted after quality swap:",
-                  error,
-                ),
-              );
-          }
+        video.currentTime = time;
+        if (isPlaying) {
+          video
+            .play()
+            .catch((error) =>
+              console.warn(
+                "video resume interrupted after quality swap:",
+                error,
+              ),
+            );
         }
       };
-      videoRef.current.addEventListener("loadedmetadata", restore, {
-        once: true,
-      });
+      video.addEventListener("loadedmetadata", restore, { once: true });
+      return () => {
+        video.removeEventListener("loadedmetadata", restore);
+      };
     }
   }, [isLowQuality, entered]);
   const handleEnter = () => {

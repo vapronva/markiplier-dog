@@ -7,6 +7,7 @@ const OG_VIDEO_URL =
   "https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4";
 const OG_IMAGE_URL =
   "https://cdn.engineering/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg";
+const OG_PLAYER_URL = "https://markiplier.dog/player";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://markiplier.dog"),
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     ],
     players: [
       {
-        playerUrl: OG_VIDEO_URL,
+        playerUrl: OG_PLAYER_URL,
         streamUrl: OG_VIDEO_URL,
         width: 1080,
         height: 1290,

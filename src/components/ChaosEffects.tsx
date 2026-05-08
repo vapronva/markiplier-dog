@@ -181,7 +181,7 @@ export const FleeingElement = () => {
           ref={(el) => {
             dogRefs.current[i] = el;
           }}
-          className="absolute transition-transform duration-50 ease-linear will-change-transform"
+          className="absolute will-change-transform"
           style={{
             left: `${dog.x}%`,
             top: `${dog.y}%`,
