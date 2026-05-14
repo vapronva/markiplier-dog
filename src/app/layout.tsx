@@ -62,7 +62,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <body className="h-screen w-screen overflow-hidden bg-black text-white antialiased">
+      <body className="bg-ink h-screen w-screen overflow-hidden text-white antialiased">
         {children}
       </body>
     </html>

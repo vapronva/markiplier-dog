@@ -21,9 +21,9 @@ export default function GlobalError({
   }, [error]);
   return (
     <html lang="en" className={inter.variable}>
-      <body className="h-screen w-screen overflow-hidden bg-black text-white antialiased">
+      <body className="bg-ink h-screen w-screen overflow-hidden text-white antialiased">
         <main className="flex h-full w-full flex-col items-center justify-center gap-6 p-8 font-mono">
-          <h1 className="text-4xl font-black tracking-tighter uppercase md:text-6xl">
+          <h1 className="text-4xl font-semibold tracking-tighter uppercase md:text-6xl">
             something broke
           </h1>
           <p className="max-w-md text-center text-sm text-white/40">

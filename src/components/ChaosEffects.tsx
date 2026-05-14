@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 
@@ -8,6 +8,7 @@ const DOG_ICON_SRC =
   "https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png";
 
 export const FloatingDebris = () => {
+  const reduce = useReducedMotion();
   const [debris] = useState<
     {
       id: number;
@@ -42,10 +43,11 @@ export const FloatingDebris = () => {
       };
     }),
   );
+  if (reduce) return null;
   return (
     <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
       {debris.map((item) => (
-        <motion.div
+        <m.div
           key={item.id}
           initial={{
             x: `${item.xPoints[0]}vw`,
@@ -74,7 +76,7 @@ export const FloatingDebris = () => {
             unoptimized
             className="h-full w-full object-contain"
           />
-        </motion.div>
+        </m.div>
       ))}
     </div>
   );
@@ -87,32 +89,42 @@ export const GlitchText = ({
   text: string;
   onClick?: () => void;
 }) => {
+  const reduce = useReducedMotion();
   return (
-    <motion.h1
-      className="relative z-50 cursor-pointer text-6xl font-black tracking-tighter text-white uppercase mix-blend-difference md:text-9xl"
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
+    <m.h1
+      className="relative z-50 cursor-pointer text-6xl font-semibold tracking-tighter text-white uppercase mix-blend-difference md:text-9xl"
+      whileHover={reduce ? undefined : { scale: 1.1 }}
+      whileTap={reduce ? undefined : { scale: 0.9 }}
       onClick={onClick}
-      animate={{
-        textShadow: [
-          "2px 0 #ff0000, -2px 0 #00ff00",
-          "-2px 0 #ff0000, 2px 0 #00ff00",
-          "2px 0 #0000ff, -2px 0 #ffff00",
-        ],
-        skewX: [0, 5, -5, 0],
-      }}
-      transition={{
-        duration: 0.2,
-        repeat: Infinity,
-        repeatType: "mirror",
-      }}
+      animate={
+        reduce
+          ? undefined
+          : {
+              textShadow: [
+                "2px 0 #ff0000, -2px 0 #00ff00",
+                "-2px 0 #ff0000, 2px 0 #00ff00",
+                "2px 0 #0000ff, -2px 0 #ffff00",
+              ],
+              skewX: [0, 5, -5, 0],
+            }
+      }
+      transition={
+        reduce
+          ? undefined
+          : {
+              duration: 0.2,
+              repeat: Infinity,
+              repeatType: "mirror",
+            }
+      }
     >
       {text}
-    </motion.h1>
+    </m.h1>
   );
 };
 
 export const FleeingElement = () => {
+  const reduce = useReducedMotion();
   const [dogs] = useState<
     { id: number; x: number; y: number; wanderPhase: number }[]
   >(() =>
@@ -128,10 +140,11 @@ export const FleeingElement = () => {
   const dogRefs = useRef<(HTMLDivElement | null)[]>([]);
   const animationFrameRef = useRef<number>(0);
   useEffect(() => {
+    if (reduce) return;
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.current = { x: e.clientX, y: e.clientY };
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     const animate = () => {
       if (!containerRef.current) return;
       const time = Date.now() / 1000;
@@ -169,7 +182,8 @@ export const FleeingElement = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [dogs]);
+  }, [dogs, reduce]);
+  if (reduce) return null;
   return (
     <div
       ref={containerRef}
@@ -193,7 +207,7 @@ export const FleeingElement = () => {
             width={96}
             height={96}
             unoptimized
-            className="h-24 w-24 object-contain drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]"
+            className="size-24 object-contain drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]"
           />
         </div>
       ))}
