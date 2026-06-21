@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
-const PLAYER_VIDEO_URL =
-  "https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4";
+import { ASSETS } from "~/lib/assets";
 
 export const metadata: Metadata = {
   title: "markiplier.dog (embed)",
@@ -12,7 +11,8 @@ export const metadata: Metadata = {
 export default function PlayerPage() {
   return (
     <video
-      src={PLAYER_VIDEO_URL}
+      src={ASSETS.videoHq}
+      aria-label="markiplier.dog video player"
       controls
       autoPlay
       muted

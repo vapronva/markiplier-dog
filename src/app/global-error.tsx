@@ -30,6 +30,7 @@ export default function GlobalError({
             market plier escaped. try again, or reload the page.
           </p>
           <button
+            type="button"
             onClick={() => reset()}
             className="font-bold text-white/60 uppercase transition-colors hover:text-red-500"
           >

@@ -4,44 +4,20 @@ import { m, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 
-const DOG_ICON_SRC =
-  "https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png";
+import { ASSETS } from "~/lib/assets";
 
 export const FloatingDebris = () => {
   const reduce = useReducedMotion();
-  const [debris] = useState<
-    {
-      id: number;
-      xPoints: number[];
-      yPoints: number[];
-      rotatePoints: number[];
-      size: number;
-      duration: number;
-    }[]
-  >(() =>
-    Array.from({ length: 100 }).map((_, i) => {
-      const startX = Math.random() * 100;
-      const startY = Math.random() * 100;
-      const startRotate = Math.random() * 360;
-      return {
-        id: i,
-        xPoints: [
-          startX,
-          (startX + Math.random() * 20 - 10 + 100) % 100,
-          (startX - Math.random() * 20 + 10 + 100) % 100,
-          startX,
-        ],
-        yPoints: [
-          startY,
-          (startY + Math.random() * 20 - 10 + 100) % 100,
-          (startY - Math.random() * 20 + 10 + 100) % 100,
-          startY,
-        ],
-        rotatePoints: [startRotate, startRotate + 360],
-        size: 20 + Math.random() * 100,
-        duration: 5 + Math.random() * 15,
-      };
-    }),
+  const [debris] = useState(() =>
+    Array.from({ length: 40 }, (_, id) => ({
+      id,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      drift: Math.random() * 20 - 10,
+      rotate: Math.random() * 360,
+      size: 20 + Math.random() * 100,
+      duration: 5 + Math.random() * 15,
+    })),
   );
   if (reduce) return null;
   return (
@@ -49,15 +25,11 @@ export const FloatingDebris = () => {
       {debris.map((item) => (
         <m.div
           key={item.id}
-          initial={{
-            x: `${item.xPoints[0]}vw`,
-            y: `${item.yPoints[0]}vh`,
-            rotate: item.rotatePoints[0],
-          }}
+          initial={{ x: `${item.x}vw`, y: `${item.y}vh`, rotate: item.rotate }}
           animate={{
-            x: item.xPoints.map((v) => `${v}vw`),
-            y: item.yPoints.map((v) => `${v}vh`),
-            rotate: item.rotatePoints,
+            x: [`${item.x}vw`, `${item.x + item.drift}vw`, `${item.x}vw`],
+            y: [`${item.y}vh`, `${item.y - item.drift}vh`, `${item.y}vh`],
+            rotate: [item.rotate, item.rotate + 360],
             scale: [1, 1.5, 0.8, 1],
           }}
           transition={{
@@ -69,7 +41,7 @@ export const FloatingDebris = () => {
           className="absolute opacity-60"
         >
           <Image
-            src={DOG_ICON_SRC}
+            src={ASSETS.dogIcon}
             alt=""
             width={120}
             height={120}
@@ -82,20 +54,12 @@ export const FloatingDebris = () => {
   );
 };
 
-export const GlitchText = ({
-  text,
-  onClick,
-}: {
-  text: string;
-  onClick?: () => void;
-}) => {
+export const GlitchText = ({ text }: { text: string }) => {
   const reduce = useReducedMotion();
   return (
     <m.h1
-      className="relative z-50 cursor-pointer text-6xl font-semibold tracking-tighter text-white uppercase mix-blend-difference md:text-9xl"
+      className="relative z-50 text-6xl font-semibold tracking-tighter text-white uppercase mix-blend-difference md:text-9xl"
       whileHover={reduce ? undefined : { scale: 1.1 }}
-      whileTap={reduce ? undefined : { scale: 0.9 }}
-      onClick={onClick}
       animate={
         reduce
           ? undefined
@@ -146,32 +110,33 @@ export const FleeingElement = () => {
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     const animate = () => {
-      if (!containerRef.current) return;
+      const container = containerRef.current;
+      if (!container) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
       const time = Date.now() / 1000;
-      dogRefs.current.forEach((dogEl: HTMLDivElement | null, index: number) => {
+      const crect = container.getBoundingClientRect();
+      dogRefs.current.forEach((dogEl, index) => {
         if (!dogEl) return;
         const dog = dogs[index];
         if (!dog) return;
-        const rect = dogEl.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const dx = mousePos.current.x - centerX;
-        const dy = mousePos.current.y - centerY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        let moveX = 0;
-        let moveY = 0;
-        let rotate = 0;
+        const baseX = crect.left + (dog.x / 100) * crect.width + 48;
+        const baseY = crect.top + (dog.y / 100) * crect.height + 48;
+        const dx = mousePos.current.x - baseX;
+        const dy = mousePos.current.y - baseY;
+        const dist = Math.hypot(dx, dy);
         const wanderRadius = 100;
-        moveX += Math.sin(time + dog.wanderPhase) * wanderRadius;
-        moveY += Math.cos(time * 0.7 + dog.wanderPhase) * wanderRadius;
-        rotate += Math.sin(time * 2 + dog.wanderPhase) * 10;
+        let moveX = Math.sin(time + dog.wanderPhase) * wanderRadius;
+        let moveY = Math.cos(time * 0.7 + dog.wanderPhase) * wanderRadius;
+        let rotate = Math.sin(time * 2 + dog.wanderPhase) * 10;
         if (dist < 300) {
           const angle = Math.atan2(dy, dx);
           const force = (300 - dist) / 300;
           const fleeDistance = 400 * force;
           moveX -= Math.cos(angle) * fleeDistance;
           moveY -= Math.sin(angle) * fleeDistance;
-          rotate += Math.random() * 360 * force;
+          rotate += Math.sin(time * 8 + dog.wanderPhase) * 40 * force;
         }
         dogEl.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${rotate}deg)`;
       });
@@ -202,7 +167,7 @@ export const FleeingElement = () => {
           }}
         >
           <Image
-            src={DOG_ICON_SRC}
+            src={ASSETS.dogIcon}
             alt=""
             width={96}
             height={96}

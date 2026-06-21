@@ -4,15 +4,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 const config: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.engineering",
-        pathname: "/markiplier-dog/**",
-      },
-    ],
-  },
 };
 
 export default withSentryConfig(config, {

@@ -3,10 +3,8 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 import { Inter } from "next/font/google";
 
-const OG_VIDEO_URL =
-  "https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4";
-const OG_IMAGE_URL =
-  "https://cdn.engineering/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg";
+import { ASSETS } from "~/lib/assets";
+
 const OG_PLAYER_URL = "https://markiplier.dog/player";
 
 export const metadata: Metadata = {
@@ -20,13 +18,13 @@ export const metadata: Metadata = {
     title: "markiplier.dog",
     images: [
       {
-        url: OG_IMAGE_URL,
+        url: ASSETS.dogPoster,
       },
     ],
     videos: [
       {
-        url: OG_VIDEO_URL,
-        secureUrl: OG_VIDEO_URL,
+        url: ASSETS.videoHq,
+        secureUrl: ASSETS.videoHq,
         width: 1080,
         height: 1290,
         type: "video/mp4",
@@ -38,13 +36,13 @@ export const metadata: Metadata = {
     title: "markiplier.dog",
     images: [
       {
-        url: OG_IMAGE_URL,
+        url: ASSETS.dogPoster,
       },
     ],
     players: [
       {
         playerUrl: OG_PLAYER_URL,
-        streamUrl: OG_VIDEO_URL,
+        streamUrl: ASSETS.videoHq,
         width: 1080,
         height: 1290,
       },

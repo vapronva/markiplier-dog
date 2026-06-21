@@ -17,139 +17,145 @@ import {
   VisualNoiseOverlay,
   FleeingElement,
 } from "~/components/ChaosEffects";
+import { ASSETS } from "~/lib/assets";
 
 export function HomeExperience() {
   const reduce = useReducedMotion();
   const [entered, setEntered] = useState(false);
+  const [pointerActive, setPointerActive] = useState(false);
+  const [lowQuality, setLowQuality] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const lastTimeRef = useRef(0);
+  const appliedLqRef = useRef(false);
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
-  const [isLowQuality, setIsLowQuality] = useState(false);
   useEffect(() => {
     if (entered || reduce) return;
     const handleMouseMove = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
+      setPointerActive(true);
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [entered, reduce, cursorX, cursorY]);
   useEffect(() => {
-    if (!videoRef.current || !entered) return;
     const video = videoRef.current;
-    const currentSrc = video.src;
-    const targetSrc = isLowQuality
-      ? "https://cdn.engineering/markiplier-dog/video/h264/aac/80p/1123.mp4"
-      : "https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4";
-    if (currentSrc !== targetSrc) {
-      const time = video.currentTime;
-      const isPlaying = !video.paused;
-      video.src = targetSrc;
-      const restore = () => {
-        video.currentTime = time;
-        if (isPlaying) {
-          video
-            .play()
-            .catch((error) =>
-              console.warn(
-                "video resume interrupted after quality swap:",
-                error,
-              ),
-            );
-        }
-      };
-      video.addEventListener("loadedmetadata", restore, { once: true });
-      return () => {
-        video.removeEventListener("loadedmetadata", restore);
-      };
-    }
-  }, [isLowQuality, entered]);
-  const handleEnter = () => {
-    setEntered(true);
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current
-          .play()
-          .catch((e) => console.error("Video play error:", e));
-        videoRef.current.volume = 1.0;
-      }
-    }, 100);
-  };
+    if (!video || !entered || appliedLqRef.current === lowQuality) return;
+    appliedLqRef.current = lowQuality;
+    const resume = lastTimeRef.current;
+    video.style.transition = "none";
+    video.style.opacity = "0";
+    video.src = lowQuality ? ASSETS.videoLq : ASSETS.videoHq;
+    const onMeta = () => {
+      if (resume > 0) video.currentTime = resume;
+    };
+    let revealed = false;
+    const reveal = () => {
+      if (revealed) return;
+      revealed = true;
+      video.style.transition = "opacity 200ms ease-out";
+      video.style.opacity = "1";
+      video.play().catch(() => undefined);
+    };
+    const onError = () => {
+      video.style.transition = "opacity 200ms ease-out";
+      video.style.opacity = "1";
+      appliedLqRef.current = !lowQuality;
+    };
+    video.addEventListener("loadedmetadata", onMeta, { once: true });
+    video.addEventListener("seeked", reveal, { once: true });
+    video.addEventListener("canplay", reveal, { once: true });
+    video.addEventListener("error", onError, { once: true });
+    return () => {
+      video.removeEventListener("loadedmetadata", onMeta);
+      video.removeEventListener("seeked", reveal);
+      video.removeEventListener("canplay", reveal);
+      video.removeEventListener("error", onError);
+    };
+  }, [lowQuality, entered]);
+  useEffect(() => {
+    if (!entered) return;
+    videoRef.current
+      ?.play()
+      .catch((e) => console.error("Video play error:", e));
+  }, [entered]);
+  const enter = () => setEntered(true);
+  const showCursor = !entered && pointerActive && !reduce;
   return (
     <LazyMotion features={domAnimation} strict>
       <main
-        className={`bg-ink relative h-screen w-screen overflow-hidden ${entered ? "cursor-crosshair" : "cursor-none"}`}
+        className={`bg-ink relative h-screen w-screen overflow-hidden ${
+          entered
+            ? "cursor-crosshair"
+            : pointerActive && !reduce
+              ? "cursor-none"
+              : "cursor-default"
+        }`}
       >
         <VisualNoiseOverlay />
+        {showCursor && (
+          <m.div
+            className="pointer-events-none fixed z-100 size-32 -translate-x-1/2 -translate-y-1/2 mix-blend-difference"
+            style={{ left: cursorX, top: cursorY }}
+            animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 0.9, 1] }}
+            transition={{ duration: 0.5, repeat: Infinity }}
+          >
+            <Image
+              src={ASSETS.dogIcon}
+              alt=""
+              width={128}
+              height={128}
+              priority
+              unoptimized
+              className="h-full w-full object-contain"
+            />
+          </m.div>
+        )}
         <AnimatePresence>
           {!entered && (
-            <>
-              {!reduce && (
-                <m.div
-                  className="pointer-events-none fixed z-100 size-32 -translate-x-1/2 -translate-y-1/2 mix-blend-difference"
-                  style={{
-                    left: cursorX,
-                    top: cursorY,
-                  }}
-                  animate={{
-                    rotate: [0, 10, -10, 0],
-                    scale: [1, 1.1, 0.9, 1],
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    repeat: Infinity,
-                  }}
-                >
-                  <Image
-                    src="https://cdn.engineering/markiplier-dog/image/dog/png/barkiplier.png"
-                    alt=""
-                    width={128}
-                    height={128}
-                    priority
-                    unoptimized
-                    className="h-full w-full object-contain"
-                  />
-                </m.div>
-              )}
-              <m.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={
-                  reduce
-                    ? { opacity: 0 }
-                    : { opacity: 0, scale: 1.5, filter: "blur(8px)" }
+            <m.div
+              key="splash"
+              role="button"
+              tabIndex={0}
+              aria-label="Enter markiplier.dog"
+              onClick={enter}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  enter();
                 }
-                transition={{ duration: reduce ? 0.2 : 0.8 }}
-                onClick={handleEnter}
-                className="bg-ink absolute inset-0 z-50 flex flex-col items-center justify-center"
-              >
-                <div
-                  className="absolute inset-0 z-0 bg-cover bg-center opacity-5 contrast-150 grayscale"
-                  style={{
-                    backgroundImage:
-                      'url("https://cdn.engineering/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg")',
-                  }}
-                />
-                <div className="z-10 flex flex-col items-center gap-8 mix-blend-difference">
-                  <GlitchText text="MARKIPLIER.DOG" />
-                </div>
-              </m.div>
-            </>
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={
+                reduce
+                  ? { opacity: 0 }
+                  : { opacity: 0, scale: 1.5, filter: "blur(8px)" }
+              }
+              transition={{ duration: reduce ? 0.2 : 0.8 }}
+              className="bg-ink absolute inset-0 z-50 flex flex-col items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-inset"
+            >
+              <div
+                className="absolute inset-0 z-0 bg-cover bg-center opacity-5 contrast-150 grayscale"
+                style={{ backgroundImage: `url("${ASSETS.dogPoster}")` }}
+              />
+              <div className="z-10 flex flex-col items-center gap-8 mix-blend-difference">
+                <GlitchText text="MARKIPLIER.DOG" />
+              </div>
+            </m.div>
           )}
         </AnimatePresence>
         {entered && (
           <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
+            transition={{ duration: reduce ? 0.2 : 1, delay: reduce ? 0 : 0.5 }}
             className="relative flex h-full w-full items-center justify-center"
           >
             <m.div
               className="absolute inset-0 z-0 bg-cover bg-center opacity-10 brightness-[0.15] contrast-[2.0] grayscale"
-              style={{
-                backgroundImage:
-                  'url("https://cdn.engineering/markiplier-dog/image/dog/jpeg/og/screenshot/dog.jpg")',
-              }}
+              style={{ backgroundImage: `url("${ASSETS.dogPoster}")` }}
               animate={
                 reduce
                   ? undefined
@@ -201,19 +207,25 @@ export function HomeExperience() {
             >
               <video
                 ref={videoRef}
-                src="https://cdn.engineering/markiplier-dog/video/h264/aac/1080p/1123.mp4"
-                className="h-full w-full object-cover"
+                src={ASSETS.videoHq}
+                aria-label="markiplier.dog video"
+                onTimeUpdate={(e) => {
+                  const v = e.currentTarget;
+                  if (!v.seeking && v.currentTime > 0)
+                    lastTimeRef.current = v.currentTime;
+                }}
+                className={`h-full w-full object-cover ${
+                  lowQuality ? "[image-rendering:pixelated]" : ""
+                }`}
                 width={1080}
                 height={1290}
-                style={{
-                  imageRendering: isLowQuality ? "pixelated" : "auto",
-                  width: "100%",
-                  height: "100%",
-                }}
                 loop
                 playsInline
                 controls={false}
-              />
+              >
+                {}
+                <track kind="captions" />
+              </video>
             </m.div>
             <div className="pointer-events-auto absolute bottom-4 left-4 z-50 flex flex-col gap-1 font-mono text-xs text-white/30">
               <span>
@@ -239,10 +251,11 @@ export function HomeExperience() {
                 </a>
               </span>
               <button
-                onClick={() => setIsLowQuality(!isLowQuality)}
+                type="button"
+                onClick={() => setLowQuality((v) => !v)}
                 className="mt-2 text-left font-semibold text-white/50 uppercase transition-colors hover:text-red-500"
               >
-                [ {isLowQuality ? "DISABLE" : "ENABLE"} LOW QUALITY ]
+                [ {lowQuality ? "DISABLE" : "ENABLE"} LOW QUALITY ]
               </button>
             </div>
           </m.div>
