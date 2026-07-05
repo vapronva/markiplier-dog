@@ -1,6 +1,6 @@
 {
   "name": "markiplier-dog",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,27 +16,27 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@sentry/nextjs": "^10.61.0",
-    "framer-motion": "^12.42.0",
-    "next": "^16.2.9",
+    "@sentry/nextjs": "^10.63.0",
+    "framer-motion": "^12.42.2",
+    "next": "^16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@next/eslint-plugin-next": "^16.2.9",
-    "@tailwindcss/postcss": "^4.3.1",
-    "@types/node": "^26.0.1",
+    "@next/eslint-plugin-next": "^16.2.10",
+    "@tailwindcss/postcss": "^4.3.2",
+    "@types/node": "^26.1.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "eslint": "^10.5.0",
+    "eslint": "^10.6.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jiti": "^2.7.0",
-    "postcss": "^8.5.15",
-    "prettier": "^3.8.4",
+    "postcss": "^8.5.16",
+    "prettier": "^3.9.4",
     "prettier-plugin-tailwindcss": "^0.8.0",
-    "tailwindcss": "^4.3.1",
+    "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.0"
+    "typescript-eslint": "^8.62.1"
   }
 }
